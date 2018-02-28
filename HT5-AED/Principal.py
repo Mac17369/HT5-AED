@@ -23,7 +23,13 @@ def New(self, env, ram):
     
     return
 
-def Ready():
+def Ready(cpu, self.proceso):
+    instruccionesProceso = random.randint(1,10)
+    with cpu.request() as turno:
+        yield turno
+        yield env.timeout()
+        
+    
     return
 
 def Running():
@@ -31,5 +37,8 @@ def Running():
 
 #-----SIMULACION-----
 
-env = simpy.Enviroment()
+env = simpy.Environment()
 ram = simpy.Resource(env, capacity = 100)
+cpu = simpy.Resource(env, capacity = 1)
+random.seed(RANDOM_SEED)
+env.run(until = 25)
