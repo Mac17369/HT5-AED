@@ -31,7 +31,7 @@ RAM_memoria = 100
 # instrucciones máximas que ejecuta la CPU
 instruccionesMAX = 3
 #Tiempo al azar de espera mientras espera al CPU
-tiempoEspera= 10
+tiempoEspera= 3
 
 #semilla inicial para los numeros al azar
 RANDOM_SEED = 127
@@ -51,7 +51,7 @@ def New(env, num_proceso, unidades, ram, io, mem, instrucciones):
     cantRam = random.randint(1,10)
     #Solicitando usar ram
     with ram.get(cantRam) as req:
-        #print("Proceso necesita", cantRam)
+        print("Proceso", num_proceso, "necesita", cantRam)
         yield req
         initready = int(env.now)
         print('Proceso %s - entra a READY                          TIEMPO %s' %(num_proceso,initready))
@@ -128,5 +128,5 @@ promedio = tiempo_acumulado/procesos_totales
 varianza = map(lambda x: (x - promedio) ** 2, tiempos)
 desviacion = math.sqrt(Prom(varianza))
 print('Promedio de tiempo de ejecucion %s' % (promedio))
-print desviacion
+print ("La desviacion estandar es: "),desviacion
 
