@@ -51,7 +51,7 @@ def New(env, num_proceso, unidades, ram, io, mem, instrucciones):
     cantRam = random.randint(1,10)
     #Solicitando usar ram
     with ram.get(cantRam) as req:
-        print("Proceso", num_proceso, "necesita", cantRam)
+        #print("Proceso", num_proceso, "necesita", cantRam)
         yield req
         initready = int(env.now)
         print('Proceso %s - entra a READY                          TIEMPO %s' %(num_proceso,initready))
