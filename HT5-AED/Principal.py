@@ -6,7 +6,7 @@
 #import Procesos
 import simpy
 import math
-import random 
+import random
 
 #-----VARIABLES---
 
@@ -37,7 +37,7 @@ tiempoEspera= 10
 RANDOM_SEED = 127
 
 cola = []
-tiempos = []
+tiempos = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 
 #-----METODOS-----
 
@@ -45,10 +45,10 @@ tiempos = []
 def New(env, num_proceso, unidades, ram, io, mem, instrucciones):
     init = int(env.now)
     print('Proceso %s - creado                                 TIEMPO %s' %(num_proceso,init))
+    tiempos.insert(int(num_proceso), int(init))
     print('Proceso %s - tiene %s instrucciones' %(num_proceso,instrucciones))
     global tiempo_acumulado, procesos_tiempo, instruccionesMAX
     cantRam = random.randint(1,10)
-
     #Solicitando usar ram
     with ram.get(cantRam) as req:
         #print("Proceso necesita", cantRam)
@@ -67,6 +67,12 @@ def New(env, num_proceso, unidades, ram, io, mem, instrucciones):
                 if(instrucciones<=0):
                     print('Proceso %s - tiene 0 instrucciones pendientes' %(num_proceso))
                     print('Proceso %s - TERMINATED' %(num_proceso))
+                    indice = int(num_proceso)
+                    final = int(initprocesos)
+                    tiempos[indice] = final - tiempos[indice]
+                    
+                    
+                    
                 else:
                     print('Proceso %s - tiene %s instrucciones pendientes' %(num_proceso,instrucciones))
                 ram.put(3)
@@ -87,6 +93,7 @@ def New(env, num_proceso, unidades, ram, io, mem, instrucciones):
         yield env.timeout(procesos_tiempo)
         exitprocesos = int(env.now)
         tiempo_acumulado = tiempo_acumulado + exitprocesos - init
+        
 
 
 #Metodo ready para ejecutar los procesos
@@ -99,7 +106,11 @@ def Ready(env, cantidad, capacidad, unidades,io,ram):
         env.process(nuevo_proceso)
         temptime = random.expovariate(1.0/capacidad)
         yield env.timeout(temptime)
-        
+
+def Prom(lista):
+    prom = 0
+    prom = sum(lista) * 1.0/len(lista)
+    return prom    
 #-----SIMULACION-----
 
 env = simpy.Environment()
@@ -114,7 +125,8 @@ env.run()
 #Promedio del tiempo en cada proceso
 promedio = tiempo_acumulado/procesos_totales
 #Desviacion estandar
-#varianza = map(lambda x: (x - promedio) ** 2, tiempo_acumulado)
-#tiempoDesviacionEstanda = math.sqrt(promedio(varianza))
+varianza = map(lambda x: (x - promedio) ** 2, tiempos)
+desviacion = math.sqrt(Prom(varianza))
 print('Promedio de tiempo de ejecucion %s' % (promedio))
+print desviacion
 
