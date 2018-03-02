@@ -37,22 +37,29 @@ tiempoEspera= 10
 RANDOM_SEED = 127
 
 cola = []
+tiempos = []
 
 #-----METODOS-----
 
+#Metodo que crea el proceso, pide la respectiva cantidad de Ram y reliaza los procesos
 def New(env, num_proceso, unidades, ram, io, mem, instrucciones):
     init = int(env.now)
     print('Proceso %s - creado                                 TIEMPO %s' %(num_proceso,init))
     print('Proceso %s - tiene %s instrucciones' %(num_proceso,instrucciones))
     global tiempo_acumulado, procesos_tiempo, instruccionesMAX
+    cantRam = random.randint(1,10)
 
-    with ram.get(instrucciones) as req:
+    #Solicitando usar ram
+    with ram.get(cantRam) as req:
+        #print("Proceso necesita", cantRam)
         yield req
         initready = int(env.now)
         print('Proceso %s - entra a READY                          TIEMPO %s' %(num_proceso,initready))
 
+        #Solicitando usar el CPU
         while(instrucciones >0):
             with unidades.request() as req2:
+                #print("Proceso %s - ha solicitado usar el CPU              TIEMPO %s" %(num_proceso,initprocesos))
                 yield req2
                 initprocesos = int(env.now)
                 print('Proceso %s - 3 instrucciones ejecutadas             TIEMPO %s' %(num_proceso,initprocesos))
@@ -82,7 +89,7 @@ def New(env, num_proceso, unidades, ram, io, mem, instrucciones):
         tiempo_acumulado = tiempo_acumulado + exitprocesos - init
 
 
-
+#Metodo ready para ejecutar los procesos
 def Ready(env, cantidad, capacidad, unidades,io,ram):
     global instrucciones
     for i in range(cantidad):
@@ -104,6 +111,10 @@ io = simpy.Resource(env, capacity=1) # Solo un input/output a la vez
 env.process(Ready(env,procesos_totales,instruccionesMAX,procesador,io,ram_TOTAL))
 
 env.run()
+#Promedio del tiempo en cada proceso
 promedio = tiempo_acumulado/procesos_totales
-print('Promedio de tiempo de ejecución %s' % (promedio))
+#Desviacion estandar
+#varianza = map(lambda x: (x - promedio) ** 2, tiempo_acumulado)
+#tiempoDesviacionEstanda = math.sqrt(promedio(varianza))
+print('Promedio de tiempo de ejecucion %s' % (promedio))
 
